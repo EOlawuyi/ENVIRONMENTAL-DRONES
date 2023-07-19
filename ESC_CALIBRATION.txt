@@ -1,0 +1,117 @@
+/**
+ * This code is the Arduino Code for the Environmental Drone owned and patented by Esther Olawuyi of 
+ * OLAWUYI RACETT NIGERIA LTD., KEMP HOUSE, 160 CITY ROAD, EC1V 2NX, LONDON, UNITED KINGDOM.
+ * OTHER OWNERS OF THE E-DRONE ARE: DR. JASON M. ZARA, DR. VESNA ZDERIC, DR. MURRAY LOEW, DR. AHMED JENDOUBI, DR. GARY HARRIS,
+ * MR. JAMES GRIFFIN, DR. MOHAMED CHOUIKHA, DR. SHANI ROSS, ENGINEER FRANCIS OLAWUYI, ENGINEER JOSHUA OLAWUYI, ENGINEER DEBORAH OLAWUYI,
+ * ENGINEER JOSEPH OLAWUYI, DR. MATTHEW OLAWUYI, DR. MICHAEL OLAWUYI, AND HONORABLE DAMILOLA SUNDAY OLAWUYI.
+ * tegae@gwmail.gwu.edu
+ * https://www.olawuyiracettnigerialtd.com
+ * July 19, 2023.
+ * 
+ * This code calibrates the 4 Electronic Speed Controllers (ESCs) on the  Environmental Drone.     
+ *
+ * 
+ */
+
+// Include Libraries
+#include <Servo.h>
+
+//Define Variables
+#define MAX_SIGNAL 2000
+#define MIN_SIGNAL 1000
+
+//define the 4 Motor Pins for the Environmental Drone
+#define MOTOR_PIN 9
+#define MOTOR_PIN2 10
+#define MOTOR_PIN3 11
+#define MOTOR_PIN4 12
+
+int DELAY = 1000;
+
+Servo motor, motor2, motor3, motor4;
+
+void setup() {
+  Serial.begin(9600);
+ Serial.println("This code Calibrates the 4 motors of the Environmental Drone");
+  Serial.println(" ");
+  delay(1500);
+  Serial.println("Starting...");
+  delay(1000);
+  Serial.println("Calibration Commences . . .");
+
+
+//Attach the 4 Motors of the Environmental Drone to the 4 Motor Pins
+  motor.attach(MOTOR_PIN);
+  motor2.attach(MOTOR_PIN2);
+  motor3.attach(MOTOR_PIN3);
+  motor4.attach(MOTOR_PIN4);
+
+  //calibrate the 4 ESCs
+  edrone_calibrate();
+
+
+}
+
+void loop() 
+{
+
+    Serial.println("Type a value between 1000 and 2000 and then press Enter");
+    Serial.println("The 4 motors of the Environmental Drone will start rotating.");
+    Serial.println("Send 1000 to stop the 4 motors of the Environmental Drone and 2000 for full throttle");
+
+    while (!Serial.available());
+    //test the 4 ESCs
+    test_Edrone_ESC();
+
+}
+
+void e_drone_calibrate()
+{
+      Serial.println("This is the code to calibrate the 4 ESCs of the Environmental Drone");
+      delay (10000);
+      Serial.print("Writing maximum output: (");Serial.print(MAX_SIGNAL);Serial.print(" us in this case)");Serial.print("\n");
+      Serial.println("Turn on power source of your Environmental Drone, wait 2 seconds, and then press any key.");
+
+      motor.writeMicroseconds(MAX_SIGNAL);
+      motor2.writeMicroseconds(MAX_SIGNAL);
+      motor3.writeMicroseconds(MAX_SIGNAL);
+      motor4.writeMicroseconds(MAX_SIGNAL);
+
+      // Wait for input
+      while (!Serial.available());
+      Serial.read();
+
+      // Send min output
+      Serial.println("\n");
+      Serial.println("\n");
+      Serial.print("Sending minimum output: (");Serial.print(MIN_SIGNAL);Serial.print(" us in this case)");Serial.print("\n");
+      motor.writeMicroseconds(MIN_SIGNAL);
+      motor2.writeMicroseconds(MIN_SIGNAL);
+      motor3.writeMicroseconds(MIN_SIGNAL);
+      motor4.writeMicroseconds(MIN_SIGNAL);
+
+      Serial.println("The Environrmental Drone ESCs have been calibrated");
+      Serial.println("----");
+
+}
+
+
+void test_Edrone_ESC()
+{
+    if (Serial.available() > 0)
+      {
+        int DELAY = Serial.parseInt();
+        if (DELAY > 999)
+        {
+
+          motor.writeMicroseconds(DELAY);
+          motor2.writeMicroseconds(DELAY);
+          motor3.writeMicroseconds(DELAY);
+          motor4.writeMicroseconds(DELAY);
+          float SPEED = (DELAY-1000)/10;
+          Serial.print("\n");
+          Serial.println("Edrone Motor speed:"); Serial.print("  "); Serial.print(SPEED); Serial.print("%"); 
+        }     
+      }
+
+}
